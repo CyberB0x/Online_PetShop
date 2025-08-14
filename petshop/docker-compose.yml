@@ -3,6 +3,7 @@ version: '3.9'
 services:
   db:
     image: postgres:15
+    container_name: db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -19,17 +20,32 @@ services:
 
   web:
     build: .
-    command: bash -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    container_name: web
+    command: >
+      bash -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn config.wsgi:application --bind 0.0.0.0:8000
+      "
     volumes:
       - .:/code
-      - static_volume:/app/staticfiles
-    ports:
-      - "8000:8000"
+      - static_volume:/code/staticfiles
     env_file:
       - .env
     depends_on:
       db:
         condition: service_healthy
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/code/staticfiles
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - web
 
 volumes:
   postgres_data:
