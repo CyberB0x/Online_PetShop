@@ -1,3 +1,77 @@
-from django.shortcuts import render
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import CartItem, Order, OrderItem
+from .serializers import CartItemSerializer, OrderSerializer
+from products.models import Product
 
-# Create your views here.
+# Добавить в корзину
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_to_cart(request):
+    product_id = request.data.get("product_id")
+    quantity = request.data.get("quantity", 1)
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=404)
+
+    cart_item, created = CartItem.objects.get_or_create(
+        user=request.user, product=product
+    )
+    if not created:
+        cart_item.quantity += int(quantity)
+    else:
+        cart_item.quantity = quantity
+    cart_item.save()
+
+    return Response({"message": "Added to cart"})
+
+
+# Удалить из корзины
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def remove_from_cart(request):
+    item_id = request.data.get("item_id")
+    try:
+        cart_item = CartItem.objects.get(id=item_id, user=request.user)
+        cart_item.delete()
+        return Response({"message": "Removed from cart"})
+    except CartItem.DoesNotExist:
+        return Response({"error": "Item not found"}, status=404)
+
+
+# Оформить заказ
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        return Response({"error": "Cart is empty"}, status=400)
+
+    order = Order.objects.create(user=request.user, total_price=0)
+    total = 0
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price,
+        )
+        total += item.product.price * item.quantity
+    order.total_price = total
+    order.save()
+
+    cart_items.delete()
+
+    return Response({"message": "Order created", "order_id": order.id})
+
+
+# Список заказов пользователя
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
