@@ -1,16 +1,31 @@
 {% extends "base.html" %}
+{% block title %}Вход — Petshop{% endblock %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="post">
+<section class="max-w-md mx-auto py-12 px-4">
+  <h1 class="text-2xl font-bold mb-6 text-center">Вход</h1>
+
+  <form method="post" class="space-y-4 bg-white p-6 rounded-xl shadow">
     {% csrf_token %}
-    <div class="mb-3">
-        <label>Username</label>
-        <input type="text" name="username" class="form-control">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Имя пользователя</label>
+      <input type="text" name="username" required
+             class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200"/>
     </div>
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Пароль</label>
+      <input type="password" name="password" required
+             class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200"/>
     </div>
-    <button class="btn btn-success">Login</button>
-</form>
+    <button type="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+      Войти
+    </button>
+  </form>
+
+  <p class="mt-4 text-center text-sm text-gray-600">
+    Нет аккаунта?
+    <a href="/register/" class="text-blue-600 hover:underline">Зарегистрируйтесь</a>
+  </p>
+</section>
 {% endblock %}

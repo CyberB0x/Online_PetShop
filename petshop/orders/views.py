@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from .models import CartItem, Order, OrderItem
 from .serializers import CartItemSerializer, OrderSerializer
 from products.models import Product
+from django.shortcuts import render
+
+def orders_page(request):
+    return render(request, "orders.html")
 
 # Добавить в корзину
 @api_view(["POST"])

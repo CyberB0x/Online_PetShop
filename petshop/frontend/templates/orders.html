@@ -1,19 +1,31 @@
 {% extends "base.html" %}
+{% block title %}Мои заказы — Petshop{% endblock %}
+
 {% block content %}
-<h2>My Orders</h2>
-{% for order in orders %}
-<div class="card mb-3">
-    <div class="card-body">
-        <h5>Order #{{ order.id }} ({{ order.created_at }})</h5>
-        <p><strong>Total:</strong> ${{ order.total_price }}</p>
-        <ul>
+<section class="max-w-5xl mx-auto py-12 px-4">
+  <h1 class="text-2xl font-bold mb-6">Мои заказы</h1>
+
+  {% if orders %}
+    <div class="space-y-6">
+      {% for order in orders %}
+        <div class="bg-white rounded-xl shadow p-6 border">
+          <div class="flex justify-between items-center mb-4">
+            <p class="font-semibold">Заказ №{{ order.id }}</p>
+            <p class="text-sm text-gray-500">{{ order.created_at|date:"d.m.Y H:i" }}</p>
+          </div>
+          <ul class="mb-4 list-disc pl-6 text-gray-700">
             {% for item in order.items.all %}
-            <li>{{ item.product.name }} x {{ item.quantity }} = ${{ item.price }}</li>
+              <li>{{ item.product.name }} — {{ item.quantity }} шт.</li>
             {% endfor %}
-        </ul>
+          </ul>
+          <p class="font-bold">Сумма: {{ order.total }} ₸</p>
+        </div>
+      {% endfor %}
     </div>
-</div>
-{% empty %}
-<p>No orders yet.</p>
-{% endfor %}
+  {% else %}
+    <div class="bg-white rounded-xl shadow p-6 text-center text-gray-500">
+      У вас пока нет заказов.
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

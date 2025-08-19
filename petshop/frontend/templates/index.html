@@ -1,19 +1,35 @@
-{% extends 'base.html'%}
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetShop</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-</head>
-<body>
+{% extends "base.html" %}
 {% block content %}
-    <h1>🐾 Welcome to PetShop</h1>
-    <div id="products"></div>
+<h1 class="text-3xl font-bold mb-6">🐾 Наши товары</h1>
 
-    <script src="{% static 'app.js' %}"></script>
+<!-- Поиск -->
+<form method="get" class="mb-6 flex gap-2">
+  <input type="text" name="q" value="{{ q }}" placeholder="Поиск товаров..."
+    class="border rounded-lg px-4 py-2 w-full">
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Поиск</button>
+</form>
+
+<!-- Категории -->
+<div class="flex gap-4 mb-6">
+  <a href="?cat=" class="{% if not current_cat %}font-bold text-blue-600{% endif %}">Все</a>
+  {% for category in categories %}
+    <a href="?cat={{ category.id }}" class="{% if category.id == current_cat %}font-bold text-blue-600{% endif %}">
+      {{ category.name }}
+    </a>
+  {% endfor %}
+</div>
+
+<!-- Товары -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for product in products %}
+    <div class="bg-white rounded-lg shadow p-4">
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg mb-3">
+      <h2 class="text-xl font-semibold">{{ product.name }}</h2>
+      <p class="text-gray-600 mb-2">{{ product.price }} ₺</p>
+      <a href="{% url 'product_detail' product.id %}" class="text-blue-600 hover:underline">Подробнее</a>
+    </div>
+  {% empty %}
+    <p>Нет товаров</p>
+  {% endfor %}
+</div>
 {% endblock %}
-</body>
-</html>

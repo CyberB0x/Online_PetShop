@@ -1,37 +1,32 @@
 {% extends "base.html" %}
-{% block content %}
-<h2>My Cart</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in cart_items %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>
-                <form method="post" action="/cart/remove/">
-                    {% csrf_token %}
-                    <input type="hidden" name="item_id" value="{{ item.id }}">
-                    <button class="btn btn-danger btn-sm">Remove</button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3">Cart is empty</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block title %}Корзина — Petshop{% endblock %}
 
-{% if cart_items %}
-<form method="post" action="/checkout/">
-    {% csrf_token %}
-    <button class="btn btn-success">Checkout</button>
-</form>
-{% endif %}
+{% block content %}
+<section class="max-w-4xl mx-auto py-12 px-4">
+  <h1 class="text-2xl font-bold mb-6">Корзина</h1>
+
+  {% if cart_items %}
+    <div class="bg-white rounded-xl shadow p-6 divide-y">
+      {% for item in cart_items %}
+        <div class="flex justify-between items-center py-4">
+          <div>
+            <p class="font-medium">{{ item.product.name }}</p>
+            <p class="text-sm text-gray-500">Кол-во: {{ item.quantity }}</p>
+          </div>
+          <div class="font-semibold">{{ item.total_price }} ₸</div>
+        </div>
+      {% endfor %}
+      <div class="pt-6 text-right">
+        <p class="text-lg font-bold">Итого: {{ cart_total }} ₸</p>
+        <a href="/checkout/" class="mt-4 inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
+          Оформить заказ
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="bg-white rounded-xl shadow p-6 text-center text-gray-500">
+      Ваша корзина пуста.
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

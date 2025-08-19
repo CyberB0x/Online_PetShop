@@ -1,0 +1,17 @@
+<h2>Оформление заказа</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Имя Фамилия</label>
+    <input type="text" name="full_name" required><br>
+
+    <label>Email</label>
+    <input type="email" name="email" required><br>
+
+    <label>Телефон</label>
+    <input type="text" name="phone"><br>
+
+    <label>Адрес</label>
+    <textarea name="address" required></textarea><br>
+
+    <button type="submit">Подтвердить заказ</button>
+</form>
