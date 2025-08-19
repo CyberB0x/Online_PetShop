@@ -15,9 +15,9 @@ class CartItem(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     full_name = models.CharField(max_length=200)
-    email = models.EmailField()
+    email = models.EmailField(default="unknown@example.com")
     phone = models.CharField(max_length=20, blank=True)
-    address = models.TextField()
+    address = models.TextField(max_length=255, default='Unknown')
     created_at = models.DateTimeField(auto_now_add=True)
     paid = models.BooleanField(default=False)
 
