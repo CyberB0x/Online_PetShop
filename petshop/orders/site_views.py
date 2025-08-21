@@ -44,3 +44,38 @@ def checkout(request):
 def order_success(request, order_id):
     order = Order.objects.get(id=order_id)
     return render(request, "order_success.html", {"order": order})
+
+
+@login_required
+def cart_item(request):
+    cart = request.session.get("cart", {})
+    products = Product.objects.filter(id__in=cart.key())
+    cart_items = []
+    total = 0
+
+    for product in products:
+        qty = cart[str(product.id)]
+        subtotal = product.price * qty
+        cart_items.append({"product": product, "qty": qty, "subtotal": subtotal})
+        total += subtotal
+
+    return render(request, "cart.html", {"cart_items": cart_items, "total": total})
+
+
+@login_required
+def add_to_cart(request, product_id):
+    cart = request.session.get("cart", {})
+    cart[str(product_id)] = cart.get(str(product_id), 0) + 1
+    request.session["cart"] = cart
+    messages.success(request, "Товар добавлен в корзину")
+    return redirect("cart")
+
+
+@login_required
+def remove_from_cart(request, product_id):
+    cart = request.session.get("cart", {})
+    if str(product_id) in cart:
+        del cart[str(product_id)]
+        request.session["cart"] = cart
+        messages.info(request, "Товар удален из корзины")
+    return redirect("cart")
