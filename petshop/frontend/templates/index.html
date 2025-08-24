@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
+
 <h1 class="text-3xl font-bold mb-6">🐾 Наши товары</h1>
 
 <!-- Поиск -->
@@ -23,7 +25,11 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
   {% for product in products %}
     <div class="bg-white rounded-lg shadow p-4">
-      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg mb-3">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded-lg mb-3">
+      {% else %}
+        <img src="{% static 'img/no-image.png' %}" alt="No image" class="rounded-lg mb-3">
+      {% endif %}
       <h2 class="text-xl font-semibold">{{ product.name }}</h2>
       <p class="text-gray-600 mb-2">{{ product.price }} ₺</p>
       <a href="{% url 'product_detail' product.id %}" class="text-blue-600 hover:underline">Подробнее</a>
