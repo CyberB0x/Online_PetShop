@@ -1,32 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Корзина — Petshop{% endblock %}
-
 {% block content %}
-<section class="max-w-4xl mx-auto py-12 px-4">
-  <h1 class="text-2xl font-bold mb-6">Корзина</h1>
 
-  {% if cart_items %}
-    <div class="bg-white rounded-xl shadow p-6 divide-y">
-      {% for item in cart_items %}
-        <div class="flex justify-between items-center py-4">
-          <div>
-            <p class="font-medium">{{ item.product.name }}</p>
-            <p class="text-sm text-gray-500">Кол-во: {{ item.quantity }}</p>
-          </div>
-          <div class="font-semibold">{{ item.total_price }} ₸</div>
-        </div>
-      {% endfor %}
-      <div class="pt-6 text-right">
-        <p class="text-lg font-bold">Итого: {{ cart_total }} ₸</p>
-        <a href="/checkout/" class="mt-4 inline-block bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-          Оформить заказ
-        </a>
-      </div>
+<h1 class="text-3xl font-bold mb-6">🛒 Ваша корзина</h1>
+
+{% if items %}
+  <div class="bg-white shadow rounded-lg p-4">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="border-b">
+          <th class="p-2">Товар</th>
+          <th class="p-2">Цена</th>
+          <th class="p-2">Количество</th>
+          <th class="p-2">Сумма</th>
+          <th class="p-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr class="border-b">
+            <td class="p-2">{{ item.product.name }}</td>
+            <td class="p-2">{{ item.product.price }} ₺</td>
+            <td class="p-2">{{ item.quantity }}</td>
+            <td class="p-2">{{ item.get_total_price }} ₺</td>
+            <td class="p-2">
+              <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
+                  Удалить
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="flex justify-end mt-4 text-xl font-semibold">
+      Итого: {{ total }} ₺
     </div>
-  {% else %}
-    <div class="bg-white rounded-xl shadow p-6 text-center text-gray-500">
-      Ваша корзина пуста.
+
+    <div class="flex justify-end mt-4">
+      <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        Оформить заказ
+      </a>
     </div>
-  {% endif %}
-</section>
+  </div>
+{% else %}
+  <p class="text-gray-600">Ваша корзина пуста 🐾</p>
+{% endif %}
+
 {% endblock %}
