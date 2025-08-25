@@ -18,17 +18,22 @@
       <tbody>
         {% for item in items %}
           <tr class="border-b">
-            <td class="p-2">{{ item.product.name }}</td>
+            <td>
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:60px; height:auto; margin-right:10px;">
+              {% endif %}
+              {{ item.product.name }}
+            </td>
             <td class="p-2">{{ item.product.price }} ₺</td>
             <td class="p-2">{{ item.quantity }}</td>
             <td class="p-2">{{ item.get_total_price }} ₺</td>
             <td class="p-2">
-              <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
-                {% csrf_token %}
-                <button type="submit"
-                        class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
-                  Удалить
-                </button>
+              <form method="post" action="{% url 'remove_from_cart' item.id %}">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
+                    Удалить
+                  </button>
               </form>
             </td>
           </tr>
