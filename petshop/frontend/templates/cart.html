@@ -7,7 +7,7 @@
   <div class="bg-white shadow rounded-lg p-4">
     <table class="w-full text-left border-collapse">
       <thead>
-        <tr class="border-b">
+        <tr class="border-b bg-gray-100">
           <th class="p-2">Товар</th>
           <th class="p-2">Цена</th>
           <th class="p-2">Количество</th>
@@ -17,23 +17,40 @@
       </thead>
       <tbody>
         {% for item in items %}
-          <tr class="border-b">
-            <td>
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2 flex items-center">
               {% if item.product.image %}
-                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:60px; height:auto; margin-right:10px;">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                     class="w-12 h-12 object-cover rounded mr-2">
               {% endif %}
               {{ item.product.name }}
             </td>
             <td class="p-2">{{ item.product.price }} ₺</td>
-            <td class="p-2">{{ item.quantity }}</td>
+            <td class="p-2">
+              <div class="flex items-center">
+                <form method="post" action="{% url 'update_cart' item.id %}" class="inline-block">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="decrease">
+                  <button type="submit"
+                          class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">➖</button>
+                </form>
+                <span class="px-3">{{ item.quantity }}</span>
+                <form method="post" action="{% url 'update_cart' item.id %}" class="inline-block">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="increase">
+                  <button type="submit"
+                          class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">➕</button>
+                </form>
+              </div>
+            </td>
             <td class="p-2">{{ item.get_total_price }} ₺</td>
             <td class="p-2">
               <form method="post" action="{% url 'remove_from_cart' item.id %}">
-                  {% csrf_token %}
-                  <button type="submit"
-                          class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
-                    Удалить
-                  </button>
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
+                  Удалить
+                </button>
               </form>
             </td>
           </tr>

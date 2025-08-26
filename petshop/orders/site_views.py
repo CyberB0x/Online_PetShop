@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import CartItem, Order, OrderItem
@@ -78,4 +78,22 @@ def remove_from_cart(request, product_id):
         del cart[str(product_id)]
         request.session["cart"] = cart
         messages.info(request, "Товар удален из корзины")
+    return redirect("cart")
+
+@login_required
+def update_cart(request, product_id):
+    cart = request.session.get("cart", {})
+    if str(product_id) not in cart:
+        return redirect("cart")
+
+    action = request.POST.get("action")
+    if action == "increase":
+        cart[str(product_id)] += 1
+    elif action == "decrease":
+        if cart[str(product_id)] > 1:
+            cart[str(product_id)] -= 1
+        else:
+            del cart[str(product_id)]
+
+    request.session["cart"] = cart
     return redirect("cart")

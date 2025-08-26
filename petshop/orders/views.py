@@ -72,6 +72,32 @@ def checkout(request):
     return Response({"message": "Order created", "order_id": order.id})
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_cart(request, product_id):
+    action = request.data.get("action")  # "increase" или "decrease"
+
+    try:
+        cart_item = CartItem.objects.get(user=request.user, product_id=product_id)
+    except CartItem.DoesNotExist:
+        return Response({"error": "Item not found"}, status=404)
+
+    if action == "increase":
+        cart_item.quantity += 1
+    elif action == "decrease":
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+        else:
+            cart_item.delete()
+            return Response({"message": "Item removed from cart"})
+    else:
+        return Response({"error": "Invalid action"}, status=400)
+
+    cart_item.save()
+    return Response({"message": "Cart updated", "quantity": cart_item.quantity})
+
+
+
 # Список заказов пользователя
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
