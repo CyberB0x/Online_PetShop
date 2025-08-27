@@ -1,14 +1,18 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import CartItem, Order, OrderItem
+from .models import Order, OrderItem
 from products.models import Product
+
 
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by("-created_at")
     return render(request, "orders.html", {"orders": orders})
 
+
+@login_required
 def checkout(request):
     cart = request.session.get("cart", {})
     if not cart:
@@ -22,7 +26,7 @@ def checkout(request):
         address = request.POST.get("address")
 
         order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
+            user=request.user,
             full_name=full_name,
             email=email,
             phone=phone,
@@ -31,7 +35,7 @@ def checkout(request):
 
         # переносим товары из корзины
         for product_id, qty in cart.items():
-            product = Product.objects.get(id=product_id)
+            product = get_object_or_404(Product, id=product_id)
             OrderItem.objects.create(order=order, product=product, quantity=qty)
 
         # очищаем корзину
@@ -41,15 +45,16 @@ def checkout(request):
 
     return render(request, "checkout.html")
 
+
 def order_success(request, order_id):
-    order = Order.objects.get(id=order_id)
+    order = get_object_or_404(Order, id=order_id)
     return render(request, "order_success.html", {"order": order})
 
 
 @login_required
 def cart_item(request):
     cart = request.session.get("cart", {})
-    products = Product.objects.filter(id__in=cart.key())
+    products = Product.objects.filter(id__in=cart.keys())
     cart_items = []
     total = 0
 
@@ -80,13 +85,16 @@ def remove_from_cart(request, product_id):
         messages.info(request, "Товар удален из корзины")
     return redirect("cart")
 
+
 @login_required
 def update_cart(request, product_id):
     cart = request.session.get("cart", {})
     if str(product_id) not in cart:
-        return redirect("cart")
+        return JsonResponse({"success": False, "error": "not_in_cart"}, status=400)
 
     action = request.POST.get("action")
+    removed = False
+
     if action == "increase":
         cart[str(product_id)] += 1
     elif action == "decrease":
@@ -94,6 +102,33 @@ def update_cart(request, product_id):
             cart[str(product_id)] -= 1
         else:
             del cart[str(product_id)]
+            removed = True
 
     request.session["cart"] = cart
-    return redirect("cart")
+
+    # обновляем общую сумму
+    products = Product.objects.filter(id__in=cart.keys())
+    cart_total = sum(p.price * cart[str(p.id)] for p in products)
+
+    if removed:
+        return JsonResponse({
+            "success": True,
+            "item": {
+                "quantity": 0,
+                "total": 0,
+                "removed": True
+            },
+            "cart_total": cart_total
+        })
+
+    # если товар остался в корзине
+    product = Product.objects.get(id=product_id)
+    return JsonResponse({
+        "success": True,
+        "item": {
+            "quantity": cart[str(product_id)],
+            "total": cart[str(product_id)] * product.price,
+            "removed": False
+        },
+        "cart_total": cart_total
+    })

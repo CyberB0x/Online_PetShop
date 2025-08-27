@@ -1,75 +1,124 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1 class="text-3xl font-bold mb-6">🛒 Ваша корзина</h1>
+<h1 class="text-3xl font-extrabold mb-8 text-gray-900">
+  <i class="fa-solid fa-cart-shopping"></i>
+  Ваша корзина
+</h1>
 
 {% if items %}
-  <div class="bg-white shadow rounded-lg p-4">
-    <table class="w-full text-left border-collapse">
+  <div class="bg-white shadow-lg rounded-2xl p-6 overflow-x-auto">
+    <table class="min-w-full max-w-6xl mx-auto text-left border-collapse">
       <thead>
-        <tr class="border-b bg-gray-100">
-          <th class="p-2">Товар</th>
-          <th class="p-2">Цена</th>
-          <th class="p-2">Количество</th>
-          <th class="p-2">Сумма</th>
-          <th class="p-2"></th>
+        <tr class="bg-gray-100 text-gray-700 text-sm uppercase tracking-wider border-b">
+          <th class="px-6 py-4">Товар</th>
+          <th class="px-6 py-4">Цена</th>
+          <th class="px-6 py-4">Количество</th>
+          <th class="px-6 py-4">Сумма</th>
+          <th class="px-6 py-4"></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-gray-800">
         {% for item in items %}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2 flex items-center">
+          <tr id="row-{{ item.id }}" class="border-b hover:bg-gray-50 transition">
+            <td class="px-6 py-4 flex items-center">
               {% if item.product.image %}
                 <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
-                     class="w-12 h-12 object-cover rounded mr-2">
+                     class="w-12 h-12 object-cover rounded mr-4 border border-gray-200">
               {% endif %}
-              {{ item.product.name }}
+              <span class="font-medium">{{ item.product.name }}</span>
             </td>
-            <td class="p-2">{{ item.product.price }} ₺</td>
-            <td class="p-2">
-              <div class="flex items-center">
-                <form method="post" action="{% url 'update_cart' item.id %}" class="inline-block">
-                  {% csrf_token %}
-                  <input type="hidden" name="action" value="decrease">
-                  <button type="submit"
-                          class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">➖</button>
-                </form>
-                <span class="px-3">{{ item.quantity }}</span>
-                <form method="post" action="{% url 'update_cart' item.id %}" class="inline-block">
-                  {% csrf_token %}
-                  <input type="hidden" name="action" value="increase">
-                  <button type="submit"
-                          class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">➕</button>
-                </form>
+            <td class="px-6 py-4">{{ item.product.price }} ₺</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-4">
+                <button onclick="updateCart({{ item.id }}, 'decrease')"
+                        class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-lg">
+                  <!--Иконка минус для кнопки-->
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+                <span id="qty-{{ item.id }}" class="w-8 text-center">{{ item.quantity }}</span>
+                <button onclick="updateCart({{ item.id }}, 'increase')"
+                        class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-lg">
+                  <!--Иконка плюс для кнопки-->
+                  <i class="fa-solid fa-plus"></i>
+                </button>
               </div>
             </td>
-            <td class="p-2">{{ item.get_total_price }} ₺</td>
-            <td class="p-2">
-              <form method="post" action="{% url 'remove_from_cart' item.id %}">
-                {% csrf_token %}
-                <button type="submit"
-                        class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700">
-                  Удалить
-                </button>
-              </form>
+            <td class="px-6 py-4">
+              <span id="total-{{ item.id }}">{{ item.get_total_price }}</span> ₺
+            </td>
+            <td class="px-6 py-4">
+              <button onclick="removeFromCart({{ item.id }})"
+                      class="bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 text-sm">
+                <!--Кнопка для удаления-->
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <div class="flex justify-end mt-4 text-xl font-semibold">
-      Итого: {{ total }} ₺
+    <div class="flex justify-end items-center mt-6 text-xl font-semibold text-gray-900 border-t pt-4">
+      Итого: <span id="cart-total" class="ml-2 text-blue-600">{{ total }}</span> ₺
     </div>
 
     <div class="flex justify-end mt-4">
-      <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+      <a href="" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium shadow">
         Оформить заказ
       </a>
     </div>
   </div>
+
 {% else %}
-  <p class="text-gray-600">Ваша корзина пуста 🐾</p>
+  <div class="bg-white text-center text-gray-500 py-20 px-6 rounded-xl shadow-sm">
+    <p class="text-lg">
+      Ваша корзина пуста
+      <i class="fa-solid fa-cart-shopping"></i>
+    </p>
+    <a href="/" class="mt-4 inline-block text-blue-600 hover:underline">Перейти в каталог</a>
+  </div>
 {% endif %}
+
+<script>
+  function updateCart(productId, action) {
+    fetch(`/orders/cart/update/${productId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: new URLSearchParams({ action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById(`qty-${productId}`).innerText = data.item.quantity;
+        document.getElementById(`total-${productId}`).innerText = data.item.total;
+        document.getElementById("cart-total").innerText = data.cart_total;
+        if (data.item.removed) {
+          document.getElementById(`row-${productId}`).remove();
+        }
+      } else {
+        alert(data.error);
+      }
+    });
+  }
+
+  function removeFromCart(productId) {
+    fetch(`/orders/cart/remove/${productId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById(`row-${productId}`).remove();
+        document.getElementById("cart-total").innerText = data.cart_total;
+      }
+    });
+  }
+</script>
 
 {% endblock %}

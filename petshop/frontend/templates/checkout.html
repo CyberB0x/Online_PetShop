@@ -1,17 +1,64 @@
-<h2>Оформление заказа</h2>
-<form method="post">
+<section class="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8 bg-white shadow-md rounded-2xl">
+  <h2 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">🛒 Оформление заказа</h2>
+
+  <form method="post" class="space-y-6">
     {% csrf_token %}
-    <label>Имя Фамилия</label>
-    <input type="text" name="full_name" required><br>
 
-    <label>Email</label>
-    <input type="email" name="email" required><br>
+    <!-- Имя -->
+    <div>
+      <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1">Имя Фамилия</label>
+      <input
+        type="text"
+        name="full_name"
+        id="full_name"
+        required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      />
+    </div>
 
-    <label>Телефон</label>
-    <input type="text" name="phone"><br>
+    <!-- Email -->
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      />
+    </div>
 
-    <label>Адрес</label>
-    <textarea name="address" required></textarea><br>
+    <!-- Телефон -->
+    <div>
+      <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+      <input
+        type="text"
+        name="phone"
+        id="phone"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      />
+    </div>
 
-    <button type="submit">Подтвердить заказ</button>
-</form>
+    <!-- Адрес -->
+    <div>
+      <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Адрес</label>
+      <textarea
+        name="address"
+        id="address"
+        rows="4"
+        required
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Кнопка -->
+    <div class="pt-4 text-center">
+      <button
+        type="submit"
+        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium shadow"
+      >
+        Подтвердить заказ
+      </button>
+    </div>
+  </form>
+</section>

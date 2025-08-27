@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}Petshop{% endblock %}</title>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
   <!-- Tailwind (CDN, без сборки) -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -14,9 +16,10 @@
   <nav class="bg-white/80 backdrop-blur border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <a href="/" class="text-2xl font-bold tracking-tight text-blue-600 hover:text-blue-700">
-        🐾 Petshop
+        <i class="fa-solid fa-dog"></i> Petshop
       </a>
 
+      <!-- Desktop menu -->
       <div class="hidden md:flex items-center gap-6">
         <a href="/" class="hover:text-blue-600">Главная</a>
         <a href="/cart/" class="hover:text-blue-600">Корзина</a>
@@ -30,6 +33,38 @@
         {% else %}
           <a href="/login/" class="hover:text-blue-600">Войти</a>
           <a href="/register/" class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+            Регистрация
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile hamburger button -->
+      <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-600">
+        <i class="fas fa-bars fa-lg"></i>
+      </button>
+    </div>
+
+    <!-- Mobile menu, hidden by default -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+      <div class="px-4 pt-4 pb-6 space-y-4">
+        <a href="/" class="block hover:text-blue-600">
+          <i class="fa-solid fa-house"></i>
+          Главная
+        </a>
+        <a href="/cart/" class="block hover:text-blue-600">
+          <i class="fa-solid fa-cart-shopping"></i>
+          Корзина
+        </a>
+        <a href="/orders/" class="block hover:text-blue-600">Мои заказы</a>
+
+        {% if user.is_authenticated %}
+          <div class="text-gray-500">Привет, {{ user.first_name|default:user.username }}</div>
+          <a href="/logout/" class="block px-3 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
+            Выйти
+          </a>
+        {% else %}
+          <a href="/login/" class="block hover:text-blue-600">Войти</a>
+          <a href="/register/" class="block px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
             Регистрация
           </a>
         {% endif %}
@@ -59,8 +94,24 @@
   <!-- FOOTER (прижат книзу через flex-колонку) -->
   <footer class="mt-10 bg-white border-t">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-500">
-      © 2025 Petshop. Сделано с ❤️ для питомцев.
+      © 2025 Petshop. Сделано с <i class="fa-solid fa-heart"></i> для питомцев.
     </div>
   </footer>
+
+  <!-- JS для переключения мобильного меню -->
+  <script>
+    const btn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+      // Меняем иконку на крестик, если меню открыто
+      if (!menu.classList.contains('hidden')) {
+        btn.innerHTML = '<i class="fas fa-times fa-lg"></i>';
+      } else {
+        btn.innerHTML = '<i class="fas fa-bars fa-lg"></i>';
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,4 +1,11 @@
-<h2>Спасибо за заказ! 🎉</h2>
-<p>Номер заказа: {{ order.id }}</p>
-<p>На ваше письмо {{ order.email }} отправлено подтверждение.</p>
-<a href="/">Вернуться в магазин</a>
+<section class="max-w-xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center bg-white rounded-2xl shadow-md mt-10">
+  <h2 class="text-3xl font-extrabold text-green-600 mb-4">Спасибо за заказ! 🎉</h2>
+  <p class="text-lg text-gray-700 mb-2">Номер заказа: <span class="font-semibold">#{{ order.id }}</span></p>
+  <p class="text-gray-600 mb-6">
+    Подтверждение отправлено на <span class="font-medium text-blue-600">{{ order.email }}</span>.
+  </p>
+  <a href="/"
+     class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium">
+    Вернуться в магазин
+  </a>
+</section>

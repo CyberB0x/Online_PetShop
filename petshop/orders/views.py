@@ -1,6 +1,10 @@
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.http import JsonResponse
+
 from .models import CartItem, Order, OrderItem
 from .serializers import CartItemSerializer, OrderSerializer
 from products.models import Product
@@ -97,6 +101,26 @@ def update_cart(request, product_id):
     return Response({"message": "Cart updated", "quantity": cart_item.quantity})
 
 
+@csrf_exempt
+@login_required
+def update_cart(request, product_id):
+    cart = request.session.get("cart", {})
+
+    if str(product_id) not in cart:
+        return JsonResponse({"error": "Item not found"}, status=400)
+
+    action = request.POST.get("action") or request.GET.get("action")
+
+    if action == "increase":
+        cart[str(product_id)] += 1
+    elif action == "decrease":
+        if cart[str(product_id)] > 1:
+            cart[str(product_id)] -= 1
+        else:
+            del cart[str(product_id)]
+
+    request.session["cart"] = cart
+    return JsonResponse({"success": True, "cart": cart})
 
 # Список заказов пользователя
 @api_view(["GET"])

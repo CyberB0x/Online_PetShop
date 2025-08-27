@@ -10,7 +10,7 @@ urlpatterns = [
     # Home + продукты (главная и корзина)
     path("", include('products.urls')),
     path("", include("users.site_urls")),
-    path("orders/", include("orders.frontend_urls")),
+    path("orders/", include("orders.urls")),
 
 
     # API endpoints
