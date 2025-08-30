@@ -3,9 +3,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Category
-from orders.models import CartItem
+from .forms import OrderForm
+from orders.models import CartItem, Order, OrderItem
 from .serializers import ProductSerializer
 from rest_framework import viewsets
+
 
 # главная
 def home(request):
@@ -25,10 +27,12 @@ def home(request):
         'q': q,
     })
 
+
 # детальная страница товара
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
     return render(request, 'product_detail.html', {'product': product})
+
 
 # корзина
 @login_required(login_url='/login/')
@@ -43,11 +47,13 @@ def add_to_cart(request, pk):
     messages.success(request, f"«{product.name}» добавлен в корзину.")
     return redirect('cart')
 
+
 @login_required(login_url='/login/')
 def cart_view(request):
     items = CartItem.objects.filter(user=request.user).select_related('product')
     total = sum(i.subtotal() for i in items)
     return render(request, "cart.html", {"cart_items": items, "total": total})
+
 
 @login_required(login_url='/login/')
 def update_cart(request, pk):
@@ -81,6 +87,7 @@ def update_cart(request, pk):
         })
     return JsonResponse({"success": False})
 
+
 @login_required(login_url='/login/')
 def remove_from_cart(request, pk):
     if request.method == "POST":
@@ -95,6 +102,41 @@ def remove_from_cart(request, pk):
 
         return JsonResponse({"success": True, "cart_total": total})
     return JsonResponse({"success": False})
+
+
+@login_required(login_url='/login/')
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        return redirect("cart")  # если корзина пустая
+
+    if request.method == "POST":
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+
+            # переносим товары из корзины в заказ
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity
+                )
+            cart_items.delete()  # очищаем корзину
+
+            return redirect("order_success", order_id=order.id)
+    else:
+        form = OrderForm()
+
+    total = sum(item.subtotal() for item in cart_items)
+    return render(
+        request,
+        "checkout.html",
+        {"form": form, "cart_items": cart_items, "total": total}
+    )
+
 
 # API (DRF)
 class ProductViewSet(viewsets.ModelViewSet):

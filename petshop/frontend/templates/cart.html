@@ -10,6 +10,7 @@
   <form style="display:none;">{% csrf_token %}</form>
     <table class="w-full border">
       <tr class="bg-gray-200">
+        <th>Фото</th>
         <th>Товар</th>
         <th>Цена</th>
         <th>Кол-во</th>
@@ -29,19 +30,16 @@
         <td>{{ item.product.price }}₺</td>
         <td>
           <button onclick="updateCart({{ item.id }}, 'decrease')" type="button">
-            <!-- (-) btn -->
             <i class="fa-solid fa-circle-minus"></i>
           </button>
           <span id="qty-{{ item.id }}">{{ item.quantity }}</span>
           <button onclick="updateCart({{ item.id }}, 'increase')" type="button">
-            <!-- (+) btn -->
             <i class="fa-solid fa-circle-plus"></i>
           </button>
         </td>
         <td><span id="total-{{ item.id }}">{{ item.subtotal }}</span>₺</td>
         <td>
           <button onclick="removeItem({{ item.id }})" type="button" class="text-red-600">
-            <!--delete btn-->
             <i class="fa-solid fa-trash"></i>
           </button>
         </td>
@@ -49,8 +47,13 @@
       {% endfor %}
     </table>
 
-    <h3 class="text-xl font-bold mt-4">Итого: <span id="cart-total">{{ total }}</span>₺</h3>
-    <p class="mt-4 text-gray-600">Функция оформления заказа скоро будет доступна</p>
+    <div class="mt-6 flex justify-between items-center">
+      <h3 class="text-xl font-bold">Итого: <span id="cart-total">{{ total }}</span>₺</h3>
+        <a href="{% url 'checkout' %}"
+           class="bg-green-600 text-white px-4 py-2 rounded mt-4 inline-block">
+           Оформить заказ
+        </a>
+    </div>
   {% else %}
     <p>
       Корзина пуста
