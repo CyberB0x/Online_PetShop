@@ -4,11 +4,7 @@ from django.contrib.auth.decorators import login_required
 from products.models import Product
 from .models import CartItem, Order, OrderItem
 from django.contrib import messages
-from .form import OrderForm
-
-@login_required
-def checkout(request):
-    pass
+from .forms import OrderForm
 
 @login_required
 def cart_view(request):

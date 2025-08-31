@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Category
-from .forms import OrderForm
+from orders.forms import OrderForm
 from orders.models import CartItem, Order, OrderItem
 from .serializers import ProductSerializer
 from rest_framework import viewsets
@@ -126,7 +126,7 @@ def checkout(request):
                 )
             cart_items.delete()  # очищаем корзину
 
-            return redirect("order_success", order_id=order.id)
+            return render(request, "order_success.html", {"order": order})
     else:
         form = OrderForm()
 
