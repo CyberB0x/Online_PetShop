@@ -3,18 +3,18 @@
 <div class="container mx-auto mt-6">
   <h2 class="text-2xl font-bold mb-4">
     <i class="fa-solid fa-cart-shopping"></i>
-    Корзина
+    Cart
   </h2>
 
   {% if cart_items %}
   <form style="display:none;">{% csrf_token %}</form>
     <table class="w-full border">
       <tr class="bg-gray-200">
-        <th>Фото</th>
-        <th>Товар</th>
-        <th>Цена</th>
-        <th>Кол-во</th>
-        <th>Сумма</th>
+        <th>Photo</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total</th>
         <th></th>
       </tr>
       {% for item in cart_items %}
@@ -23,7 +23,7 @@
           {% if item.product.image %}
             <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-[50px] h-[50px] object-cover mx-auto rounded">
           {% else %}
-            <span class="text-gray-500">Нет фото</span>
+            <span class="text-gray-500">No photo</span>
           {% endif %}
         </td>
         <td>{{ item.product.name }}</td>
@@ -48,15 +48,15 @@
     </table>
 
     <div class="mt-6 flex justify-between items-center">
-      <h3 class="text-xl font-bold">Итого: <span id="cart-total">{{ total }}</span>₺</h3>
+      <h3 class="text-xl font-bold">Total: <span id="cart-total">{{ total }}</span>₺</h3>
         <a href="{% url 'checkout' %}"
            class="bg-green-600 text-white px-4 py-2 rounded mt-4 inline-block">
-           Оформить заказ
+           Checkout
         </a>
     </div>
   {% else %}
     <p>
-      Корзина пуста
+      Your cart is empty
       <i class="fa-solid fa-heart-crack"></i>
     </p>
   {% endif %}

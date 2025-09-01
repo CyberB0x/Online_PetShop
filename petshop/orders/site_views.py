@@ -6,6 +6,7 @@ from .models import CartItem, Order, OrderItem
 from django.contrib import messages
 from .forms import OrderForm
 
+
 @login_required
 def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -18,7 +19,7 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     cart_item, created = CartItem.objects.get_or_create(
-        user=request.user,  # ВАЖНО!
+        user=request.user,  # IMPORTANT!
         product=product
     )
     if not created:
@@ -26,6 +27,7 @@ def add_to_cart(request, product_id):
         cart_item.save()
 
     return redirect("cart")
+
 
 @login_required
 def update_cart(request, item_id):
@@ -44,7 +46,8 @@ def update_cart(request, item_id):
 
         item.save()
         cart_total = sum(i.subtotal for i in CartItem.objects.filter(user=request.user))
-        return JsonResponse({"success": True, "item": {"quantity": item.quantity, "total": item.subtotal}, "cart_total": cart_total})
+        return JsonResponse(
+            {"success": True, "item": {"quantity": item.quantity, "total": item.subtotal}, "cart_total": cart_total})
 
     return JsonResponse({"success": False})
 
@@ -70,12 +73,14 @@ def checkout(request):
 
     if request.method == "POST":
         form = OrderForm(request.POST)
+        payment_method = request.POST.get("payment_method")  # <-- Selecting payment method
         if form.is_valid():
             order = form.save(commit=False)
             order.user = request.user
+            order.payment_method = payment_method  # <-- save payment method
             order.save()
 
-            # переносим товары из корзины в заказ
+            # Moving items from the cart to the order
             for item in cart_items:
                 OrderItem.objects.create(
                     order=order,
@@ -83,15 +88,14 @@ def checkout(request):
                     quantity=item.quantity
                 )
 
-            # очищаем корзину
-            cart_items.delete()
+            cart_items.delete()  # clear cart
 
-            messages.success(request, f"Ваш заказ №{order.id} успешно оформлен!")
+            messages.success(request, f"Your order №{order.id} Successfully placed!")
             return redirect("order_success", order_id=order.id)
     else:
         form = OrderForm()
 
-    total = sum(item.subtotal() for item in cart_items)
+    total = sum(item.subtotal for item in cart_items)
 
     return render(request, "orders/checkout.html", {
         "form": form,
@@ -100,36 +104,10 @@ def checkout(request):
     })
 
 
-
 @login_required
-def checkout_view(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    if not cart_items.exists():
-        return redirect("cart")  # если корзина пустая
-
-    if request.method == "POST":
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.user = request.user
-            order.save()
-
-            # переносим товары из корзины в заказ
-            for item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity
-                )
-            cart_items.delete()  # очищаем корзину
-
-            return render(request, "orders/order_success.html", {"order": order})
-    else:
-        form = OrderForm()
-
-    total = sum(item.subtotal() for item in cart_items)
-    return render(request, "orders/checkout.html", {"form": form, "cart_items": cart_items, "total": total})
-
+def orders_list(request):
+    orders = Order.objects.all().order_by("-created_at")
+    return render(request, "orders/orders_list.html", {"orders": orders})
 
 
 @login_required

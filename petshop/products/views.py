@@ -9,7 +9,7 @@ from .serializers import ProductSerializer
 from rest_framework import viewsets
 
 
-# главная
+# home
 def home(request):
     q = request.GET.get('q') or ''
     cat = request.GET.get('cat')
@@ -28,13 +28,13 @@ def home(request):
     })
 
 
-# детальная страница товара
+# product detail page
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
     return render(request, 'product_detail.html', {'product': product})
 
 
-# корзина
+# cart
 @login_required(login_url='/login/')
 def add_to_cart(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
@@ -44,7 +44,7 @@ def add_to_cart(request, pk):
     if not created:
         item.quantity += 1
         item.save()
-    messages.success(request, f"«{product.name}» добавлен в корзину.")
+    messages.success(request, f"«{product.name}» added to cart.")
     return redirect('cart')
 
 
@@ -108,7 +108,7 @@ def remove_from_cart(request, pk):
 def checkout(request):
     cart_items = CartItem.objects.filter(user=request.user)
     if not cart_items.exists():
-        return redirect("cart")  # если корзина пустая
+        return redirect("cart")  # Your cart is empty
 
     if request.method == "POST":
         form = OrderForm(request.POST)
@@ -117,14 +117,14 @@ def checkout(request):
             order.user = request.user
             order.save()
 
-            # переносим товары из корзины в заказ
+            # Moving items from cart to order
             for item in cart_items:
                 OrderItem.objects.create(
                     order=order,
                     product=item.product,
                     quantity=item.quantity
                 )
-            cart_items.delete()  # очищаем корзину
+            cart_items.delete()  # clear cart
 
             return render(request, "order_success.html", {"order": order})
     else:

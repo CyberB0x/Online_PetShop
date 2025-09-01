@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        My Orders
+    </h2>
+    {% if orders %}
+        <ul class="list-group">
+            {% for order in orders %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Order №{{ order.id }} — {{ order.get_total_price }} ₺
+                    <a href="{% url 'order_success' order.id %}" class="btn btn-sm btn-outline-primary">Learn more</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

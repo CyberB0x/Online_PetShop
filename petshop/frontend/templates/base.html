@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="csrf-token" content="{{ csrf_token }}">
@@ -9,7 +9,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-  <!-- Tailwind (CDN, без сборки) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-900">
@@ -22,19 +22,28 @@
 
       <!-- Desktop menu -->
       <div class="hidden md:flex items-center gap-6">
-        <a href="/" class="hover:text-blue-600">Главная</a>
-        <a href="/cart/" class="hover:text-blue-600">Корзина</a>
-        <a href="/orders/" class="hover:text-blue-600">Мои заказы</a>
+        <a href="/" class="hover:text-blue-600">
+          <!--Home page-->
+          <i class="fa-solid fa-house"></i>
+        </a>
+        <a href="/cart/" class="hover:text-blue-600">
+          <!--Cart page-->
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <a href="/profile/" class="hover:text-blue-600">
+          <!--Profile page-->
+          <i class="fa-solid fa-user"></i>
+        </a>
 
         {% if user.is_authenticated %}
-          <span class="text-gray-500">Привет, {{ user.first_name|default:user.username }}</span>
+          <!--<span class="text-gray-500">Привет, {{ user.first_name|default:user.username }}</span>-->
           <a href="/logout/" class="px-3 py-1 rounded-lg border text-red-600 border-red-200 hover:bg-red-50">
-            Выйти
+            Log out
           </a>
         {% else %}
-          <a href="/login/" class="hover:text-blue-600">Войти</a>
+          <a href="/login/" class="hover:text-blue-600">Log in</a>
           <a href="/register/" class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-            Регистрация
+            Registration
           </a>
         {% endif %}
       </div>
@@ -49,24 +58,27 @@
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
       <div class="px-4 pt-4 pb-6 space-y-4">
         <a href="/" class="block hover:text-blue-600">
+          <!--home page mobil-->
           <i class="fa-solid fa-house"></i>
-          Главная
         </a>
         <a href="/cart/" class="block hover:text-blue-600">
+          <!--cart page mobil-->
           <i class="fa-solid fa-cart-shopping"></i>
-          Корзина
         </a>
-        <a href="/orders/" class="block hover:text-blue-600">Мои заказы</a>
+        <a href="/profile/" class="block hover:text-blue-600">
+          <!--profile page mobil-->
+          <i class="fa-solid fa-user"></i>
+        </a>
 
         {% if user.is_authenticated %}
           <div class="text-gray-500">Привет, {{ user.first_name|default:user.username }}</div>
           <a href="/logout/" class="block px-3 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50">
-            Выйти
+            Log out
           </a>
         {% else %}
-          <a href="/login/" class="block hover:text-blue-600">Войти</a>
+          <a href="/login/" class="block hover:text-blue-600">Log in</a>
           <a href="/register/" class="block px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-            Регистрация
+            Registration
           </a>
         {% endif %}
       </div>
@@ -92,14 +104,14 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- FOOTER (прижат книзу через flex-колонку) -->
+  <!-- FOOTER -->
   <footer class="mt-10 bg-white border-t">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-500">
-      © 2025 Petshop. Сделано с <i class="fa-solid fa-heart"></i> для питомцев.
+      © 2025 Petshop. Made with <i class="fa-solid fa-heart"></i> for pets.
     </div>
   </footer>
 
-  <!-- JS для переключения мобильного меню -->
+  <!-- JS mobil menu -->
   <script>
     const btn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');

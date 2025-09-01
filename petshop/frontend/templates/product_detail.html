@@ -3,7 +3,7 @@
 {% block content %}
 <div class="bg-white shadow-xl rounded-2xl p-8 max-w-3xl mx-auto mt-8">
 
-  <!-- Изображение -->
+  <!-- image -->
   {% if product.image %}
     <img src="{{ product.image.url }}" alt="{{ product.name }}"
          class="w-full h-80 object-cover rounded-xl mb-6 shadow-md">
@@ -12,20 +12,20 @@
          class="w-full h-80 object-cover rounded-xl mb-6 shadow-md">
   {% endif %}
 
-  <!-- Название -->
+  <!-- product name -->
   <h1 class="text-4xl font-extrabold text-gray-900 mb-4">{{ product.name }}</h1>
 
-  <!-- Описание -->
+  <!-- description -->
   <p class="text-gray-700 text-lg leading-relaxed mb-6">{{ product.description }}</p>
 
-  <!-- Цена -->
+  <!-- price -->
   <p class="text-3xl font-semibold text-blue-600 mb-8">{{ product.price }} ₺</p>
 
-  <!-- Кнопка -->
+  <!-- btn -->
   <form method="post" action="{% url 'add_to_cart' product.id %}" class="inline">
     {% csrf_token %}
     <button type="submit" class="bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition text-sm font-medium">
-      В корзину
+      Add to cart
     </button>
   </form>
 

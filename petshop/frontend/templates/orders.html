@@ -1,35 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Мои заказы — Petshop{% endblock %}
+{% block title %}My orders — Petshop{% endblock %}
 
 {% block content %}
 <section class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-  <h1 class="text-3xl font-extrabold text-gray-900 mb-8">🧾 Мои заказы</h1>
+  <h1 class="text-3xl font-extrabold text-gray-900 mb-8">
+    <i class="fa-solid fa-boxes-stacked"></i>
+    My orders
+  </h1>
 
   {% if orders %}
     <div class="space-y-6">
       {% for order in orders %}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition p-6">
-          <!-- Заголовок -->
+          <!-- header -->
           <div class="flex justify-between items-center mb-4">
-            <p class="text-lg font-semibold text-blue-700">Заказ №{{ order.id }}</p>
+            <p class="text-lg font-semibold text-blue-700">Order №{{ order.id }}</p>
             <p class="text-sm text-gray-500">{{ order.created_at|date:"d.m.Y H:i" }}</p>
           </div>
 
-          <!-- Список товаров -->
+          <!-- list order -->
           <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
             {% for item in order.items.all %}
               <li><span class="font-medium">{{ item.product.name }}</span> — {{ item.quantity }} шт.</li>
             {% endfor %}
           </ul>
 
-          <!-- Сумма -->
-          <p class="text-right text-lg font-bold text-gray-800">Сумма: {{ order.total }} ₸</p>
+          <!-- total -->
+          <p class="text-right text-lg font-bold text-gray-800">Total: {{ order.total }} ₸</p>
         </div>
       {% endfor %}
     </div>
   {% else %}
     <div class="bg-white border border-dashed border-gray-300 rounded-xl shadow-sm p-10 text-center text-gray-500">
-      <p class="text-lg">У вас пока нет заказов 🐾</p>
+      <p class="text-lg">
+        You have no orders yet
+        <i class="fa-solid fa-paw"></i>
+      </p>
     </div>
   {% endif %}
 </section>

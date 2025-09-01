@@ -4,16 +4,17 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.http import JsonResponse
-
 from .models import CartItem, Order, OrderItem
 from .serializers import CartItemSerializer, OrderSerializer
 from products.models import Product
 from django.shortcuts import render
 
+
 def orders_page(request):
     return render(request, "orders.html")
 
-# Добавить в корзину
+
+# Add to cart
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def add_to_cart(request):
@@ -37,7 +38,7 @@ def add_to_cart(request):
     return Response({"message": "Added to cart"})
 
 
-# Удалить из корзины
+# Remove from cart
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def remove_from_cart(request):
@@ -50,7 +51,7 @@ def remove_from_cart(request):
         return Response({"error": "Item not found"}, status=404)
 
 
-# Оформить заказ
+# Confirm order
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def checkout(request):
@@ -79,7 +80,7 @@ def checkout(request):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def update_cart(request, product_id):
-    action = request.data.get("action")  # "increase" или "decrease"
+    action = request.data.get("action")  # "increase" or "decrease"
 
     try:
         cart_item = CartItem.objects.get(user=request.user, product_id=product_id)
@@ -122,7 +123,8 @@ def update_cart(request, product_id):
     request.session["cart"] = cart
     return JsonResponse({"success": True, "cart": cart})
 
-# Список заказов пользователя
+
+# User order list
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def my_orders(request):

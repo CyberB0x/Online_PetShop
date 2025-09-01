@@ -4,7 +4,7 @@
 
 <h1 class="text-3xl font-extrabold mb-8 text-blue-700 text-center">
   <i class="fa-solid fa-paw"></i>
-  Наши товары
+  Our products
 </h1>
 
 <form method="get" class="mb-8 flex gap-2 max-w-md mx-auto">
@@ -12,12 +12,12 @@
     type="text"
     name="q"
     value="{{ q }}"
-    placeholder="Поиск товаров..."
+    placeholder="Search products..."
     class="border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition rounded-lg px-4 py-2 w-full shadow-sm"/>
   <button
     type="submit"
     class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium shadow">
-    <!--Кнопка поиск-->
+    <!--search btn-->
     <i class="fa-solid fa-magnifying-glass"></i>
   </button>
 </form>
@@ -51,26 +51,26 @@
           <div class="mt-auto flex justify-between items-center">
             <a href="{% url 'product_detail' product.id %}" class="text-blue-600 hover:underline text-sm font-medium">
              <i class="fa-solid fa-list-check"></i>
-              Подробнее
+              Learn more
             </a>
             {% if user.is_authenticated %}
               <form method="post" action="{% url 'add_to_cart' product.id %}" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition text-sm font-medium">
-                  <!--Иконка кнопки добавить в корзину-->
+                  <!--Add to cart button icon-->
                   <i class="fa-solid fa-cart-shopping"></i>
                 </button>
               </form>
             {% else %}
               <a href="{% url 'login' %}" class="bg-gray-200 text-gray-600 px-4 py-1.5 rounded-lg hover:bg-gray-300 transition text-sm font-medium">
-                Войти, чтобы купить
+                Sign in to buy
               </a>
             {% endif %}
           </div>
         </div>
       </div>
     {% empty %}
-      <p class="text-gray-500 text-center">Нет товаров</p>
+      <p class="text-gray-500 text-center">No products available</p>
     {% endfor %}
   </div>
 </div>
