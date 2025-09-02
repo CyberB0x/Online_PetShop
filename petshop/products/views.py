@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 from .models import Product, Category
 from orders.forms import OrderForm
 from orders.models import CartItem, Order, OrderItem
@@ -13,15 +14,23 @@ from rest_framework import viewsets
 def home(request):
     q = request.GET.get('q') or ''
     cat = request.GET.get('cat')
+
     products = Product.objects.filter(is_active=True)
+
     if q:
         products = products.filter(name__icontains=q)
     if cat:
         products = products.filter(category_id=cat)
 
     categories = Category.objects.all()
+
+    # Создаём пагинацию
+    paginator = Paginator(products, 6)  # по 6 товаров на страницу
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'index.html', {
-        'products': products,
+        'page_obj': page_obj,
         'categories': categories,
         'current_cat': int(cat) if cat else None,
         'q': q,

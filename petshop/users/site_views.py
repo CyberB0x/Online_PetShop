@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -6,11 +7,15 @@ from django.views.decorators.http import require_http_methods
 
 User = get_user_model()
 
+
 @login_required
 def profile_view(request):
-    user = request.user
-    orders = user.orders.all()
-    return render(request, "profile.html", {"user": user, "orders": orders})
+    order_list = request.user.orders.all().order_by("-created_at")
+    paginator = Paginator(order_list, 4)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'profile.html', {'page_obj': page_obj})
 
 
 @require_http_methods(["GET", "POST"])
